@@ -14,6 +14,14 @@ const UserSchema = new Schema(
             type:String, 
             required: true,
         },
+        firstName: {
+            type:String, 
+            required: true,
+        },
+        lastName: {
+            type:String, 
+            required: true,
+        }
     },
     { timestamps: true, toJSON: { getters: true } } // timestamps, in this object, will give us when this particular one was created and updated
 )

@@ -3,7 +3,7 @@ import Project from "../models/Project.js";
 
 const router = express.Router();
 
-router.get("/projects", async (req,res) => {
+router.post("/post", async (req,res) => {
     try{
         // success result of 200 status to the front end
         // sending our kpis object that we grabbed from database and sending it to front end

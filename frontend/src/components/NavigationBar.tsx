@@ -5,6 +5,8 @@ import { Box, Typography, useTheme } from '@mui/material'
 import ConfirmationNumberSharpIcon from '@mui/icons-material/ConfirmationNumberSharp';
 import AdminPanelSettingsSharpIcon from '@mui/icons-material/AdminPanelSettingsSharp';
 import GridViewSharpIcon from '@mui/icons-material/GridViewSharp';
+import LoginIcon from '@mui/icons-material/Login';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 
 const Navbar = () => {
     // grabs the theme settings from theme.ts, grabs the pallete object from exported themeSettings
@@ -12,7 +14,7 @@ const Navbar = () => {
     // state determining what page we are on, so we can highlight the text for the page
     const [selected, setSelected] = useState("dashboard");
   return (
-    <Box 
+    <Box
         p="3rem 1.5rem 1rem 1.5rem"
         color={ palette.grey[300]}
         display="flex"
@@ -57,7 +59,6 @@ const Navbar = () => {
                     <Link
                         to="/"
                         onClick={()=> setSelected("dashboard")}
-                        // Color to be if selected is equal to dashboard, inherit grab the color it currently is, will give primary 100 when selected primary 700 when not
                         style={{
                             color: selected === "dashboard" ? "inherit" : palette.grey[700],
                             textDecoration: "inherit",
@@ -83,7 +84,6 @@ const Navbar = () => {
                     <Link
                         to="/tickets"
                         onClick={()=> setSelected("tickets")}
-                        // Color to be if selected is equal to dashboard, inherit grab the color it currently is, will give primary 100 when selected primary 700 when not
                         style={{
                             color: selected === "tickets" ? "inherit" : palette.grey[700],
                             textDecoration: "inherit",
@@ -109,7 +109,6 @@ const Navbar = () => {
                     <Link
                         to="/admin"
                         onClick={()=> setSelected("admin")}
-                        // Color to be if selected is equal to dashboard, inherit grab the color it currently is, will give primary 100 when selected primary 700 when not
                         style={{
                             color: selected === "admin" ? "inherit" : palette.grey[700],
                             textDecoration: "inherit",
@@ -120,9 +119,61 @@ const Navbar = () => {
                         Administration
                     </Link>
                 </Box>
+
+                {/* LOGIN TAB */}
+
+                <Box 
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    paddingTop="275%"
+                    sx={{ "&:hover": {color: palette.primary[100]}}}
+                >
+                    <LoginIcon
+                        sx={{ fontSize: "24px", marginRight: "2px"}}
+                    />
+                    <Link
+                        to="/login"
+                        onClick={()=> setSelected("login")}
+                        style={{
+                            color: selected === "login" ? "inherit" : palette.grey[700],
+                            textDecoration: "inherit",
+                            fontSize: "20px",
+                            paddingLeft: "1rem"
+                        }}
+                    >
+                        Login
+                    </Link>
+                </Box>
+
+                {/* REGISTER TAB */}
+
+                <Box 
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ "&:hover": {color: palette.primary[100]}}}
+                >
+                    <AppRegistrationIcon
+                        sx={{ fontSize: "24px", marginRight: "2px"}}
+                    />
+                    <Link
+                        to="/register"
+                        onClick={()=> setSelected("register")}
+                        style={{
+                            color: selected === "register" ? "inherit" : palette.grey[700],
+                            textDecoration: "inherit",
+                            fontSize: "20px",
+                            paddingLeft: "1rem"
+                        }}
+                    >
+                        Register
+                    </Link>
+                </Box>
+                
             </Box>
         </Box>
-        
+    
     </Box>
   )
 }
