@@ -1,7 +1,7 @@
 import BlockBox from '@/components/BlockBox'
 import { Button, FormControl, Stack, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { BootstrapInput } from './TextField'
+import { useState } from 'react'
+import { BootstrapInput } from '../../components/TextField'
 
 const RegistrationBox = () => {
     const [username, setUsername] = useState('');
@@ -56,7 +56,7 @@ const RegistrationBox = () => {
                     <BootstrapInput onChange={ev => setPassword(ev.target.value)} value={password}/>
                 </FormControl>
             </Stack>
-            <Button type="submit" variant="outlined" color="secondary">Submit</Button>
+            <Button type="submit" variant="outlined" color="secondary">Register</Button>
         </form>
         </BlockBox>
     )

@@ -1,5 +1,5 @@
-import { useMemo } from "react"
-import { Routes, Route, BrowserRouter } from "react-router-dom"
+import { useContext, useEffect, useMemo, useState } from "react"
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom"
 import { Box, CssBaseline, ThemeProvider } from "@mui/material"
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
@@ -8,36 +8,35 @@ import Login from "@/scenes/loginPage";
 import Register from "@/scenes/registerPage";
 import Tickets from "@/scenes/ticketsPage";
 import Admin from "@/scenes/adminPage";
+import LoginRegister from "@/scenes/loginRegisterPage";
 import Navbar from "@/components/NavigationBar";
-import { UserContextProvider } from "./UserContext";
+import { useSelector } from "react-redux";
 
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), []);
+  const isAuth = Boolean(useSelector((state) => state.token));
+
   return (
     <div className="app">
-      <UserContextProvider>
-        <BrowserRouter>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
             <Box height="100%" width="100%" display="flex" justifyContent="flex-start">
-              <Navbar />
               <Box
                 className="content"
-                height="100%" 
+                height="100%"
                 width="100%"
               >
                 <Routes>
-                  <Route path ="/" element={<Landing />} />
-                  <Route path="/tickets" element={<Tickets />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
+                  <Route path="/" element={<LoginRegister />} />
+                  <Route path ="/dashboard" element={isAuth ? <Landing /> : <Navigate to="/" />} />
+                  <Route path="/tickets" element={isAuth ? <Tickets /> : <Navigate to="/" />} />
+                  <Route path="/admin" element={isAuth ? <Admin /> : <Navigate to="/" />} />
                 </Routes>
               </Box>
             </Box>
-          </ThemeProvider>
-        </BrowserRouter>
-      </UserContextProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     </div>
   )
 }

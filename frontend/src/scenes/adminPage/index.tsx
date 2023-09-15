@@ -1,8 +1,13 @@
 import React from 'react'
+import Navbar from '@/components/NavigationBar';
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 
 const Admin = () => {
   return (
-    <div>Admin</div>
+    <Box height="100%" width="100%" display="flex" justifyContent="flex-start">
+      <Navbar current="admin"/>
+      <Box></Box>
+    </Box>
   )
 }
 

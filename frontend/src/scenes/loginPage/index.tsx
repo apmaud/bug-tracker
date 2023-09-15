@@ -1,9 +1,18 @@
-import React from 'react'
+import { Box } from '@mui/material';
+import LoginBox from './LoginBox';
 
-const Login = () => {
+const Register = () => {
   return (
-    <div>Login</div>
-  )
+    <Box
+      width="100%" 
+      height="100%" 
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <LoginBox />
+    </Box>
+    )
 }
 
-export default Login
+export default Register
