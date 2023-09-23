@@ -21,9 +21,19 @@ const UserSchema = new Schema(
         lastName: {
             type:String, 
             required: true,
-        }
+        },
+        fullName: {
+            type:String,
+            required:true,
+            default: function(){
+              return this.firstName + " " + this.lastName
+            }
+        },
     },
-    { timestamps: true, toJSON: { getters: true } } // timestamps, in this object, will give us when this particular one was created and updated
+    { 
+        timestamps: true, 
+        toJSON: { getters: true },
+    } // timestamps, in this object, will give us when this particular one was created and updated
 )
 
 const User = mongoose.model("User", UserSchema)

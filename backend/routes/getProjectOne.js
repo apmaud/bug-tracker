@@ -3,10 +3,11 @@ import Project from "../models/Project.js";
 
 const router = express.Router();
 
-router.get("/get", async (req,res) => {
+router.get("/:id", async (req,res) => {
+    const { id } = req.params
     try{
-        const projects = await Project.find()
-        res.status(200).json(projects)
+        const project = await Project.findOne({_id: id})
+        res.status(200).json(project)
     } catch(error) {
         res.status(404).json({ message: error.message });
     }

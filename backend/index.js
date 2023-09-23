@@ -5,22 +5,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import getProject from "./routes/getProject.js";
-import getTicket from "./routes/getTicket.js";
-import getUser from "./routes/getUser.js";
-import getComment from "./routes/getComment.js";
-import getUserProfile from "./routes/getUserProfile.js";
-import postComment from "./routes/postComment.js";
-import postProject from "./routes/postProject.js";
-import postTicket from "./routes/postTicket.js";
-import postUser from "./routes/postUser.js";
-import postUserLogin from "./routes/postUserLogin.js"
-import postUserLogout from "./routes/postUserLogout.js"
 import Comment from "./models/Comment.js";
 import Project from "./models/Project.js";
 import Ticket from "./models/Ticket.js";
 import User from "./models/User.js";
-
+import projectsRoutes from "./routes/projects.js"
+import usersRoutes from "./routes/users.js"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
@@ -45,15 +35,11 @@ app.use(cors({credentials: true, origin:'http://127.0.0.1:5173'}));
 app.use(cookieParser());
 
 // ROUTES
-const projectsRoutes = [getProject, postProject]
-const ticketsRoutes = [getTicket, postTicket]
-const usersRoutes = [getUser, getUserProfile, postUser, postUserLogin, postUserLogout]
-const commentsRoutes = [getComment, postComment]
-app.use("/projects", projectsRoutes);
-app.use("/tickets", ticketsRoutes);
-app.use("/users", usersRoutes);
-app.use("/comments", commentsRoutes);
 
+app.use("/projects", projectsRoutes);
+// app.use("/tickets", ticketsRoutes);
+app.use("/users", usersRoutes);
+// app.use("/comments", commentsRoutes);
 
 // app.post('/register', async (req, res) => {
 //     const {username, password} = req.body;

@@ -9,7 +9,8 @@ import Register from "@/scenes/registerPage";
 import Tickets from "@/scenes/ticketsPage";
 import Admin from "@/scenes/adminPage";
 import LoginRegister from "@/scenes/loginRegisterPage";
-import Navbar from "@/components/NavigationBar";
+import Project from "@/scenes/projectPage";
+import Navbar from "@/components/vNavigationBar";
 import { useSelector } from "react-redux";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                   <Route path ="/dashboard" element={isAuth ? <Landing /> : <Navigate to="/" />} />
                   <Route path="/tickets" element={isAuth ? <Tickets /> : <Navigate to="/" />} />
                   <Route path="/admin" element={isAuth ? <Admin /> : <Navigate to="/" />} />
+                  <Route path="/projects/:projectId" element={isAuth ? <Project /> : <Navigate to="/" />} />
                 </Routes>
               </Box>
             </Box>

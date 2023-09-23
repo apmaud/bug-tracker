@@ -1,16 +1,31 @@
 import express from "express";
 import Project from "../models/Project.js";
+import User from "../models/User.js";
 
 const router = express.Router();
 
 router.post("/post", async (req,res) => {
-    try{
-        // success result of 200 status to the front end
-        // sending our kpis object that we grabbed from database and sending it to front end
-        const projects = await Project.find();
-        res.status(200).json(projects)
-    } catch(error) {
-        res.status(404).json({ message: error.message });
+    const {name, description, contributors} = req.body; 
+    try {
+        const contributorList = await Promise.all(contributors.map(async (name) => {
+            const fullName = name.split(" ");
+            const firstName = fullName[0];
+            const lastName = fullName[1];
+            const user = await User.findOne({firstName: firstName, lastName: lastName})
+            return user._id
+        }
+        ))
+        const projectDoc = await Project.create({
+            name,
+            description,
+            contributors: contributorList,
+            contributorNames: contributors,
+        });
+        console.log(projectDoc);
+        res.json(projectDoc);
+    } catch(e) {
+        console.log(e);
+        res.status(400).json(e)
     }
 });
 

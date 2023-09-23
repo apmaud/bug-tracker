@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from '@/components/NavigationBar';
+import Navbar from '@/components/vNavigationBar';
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 
 const Admin = () => {

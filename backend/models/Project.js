@@ -15,9 +15,16 @@ const ProjectSchema = new Schema(
         contributors: [
             {
                 type: mongoose.SchemaTypes.ObjectId,
-                ref: "User", // refers to the Transaction object
+                ref: "User",
+                required: true,
             }
         ],
+        contributorNames: [
+        {
+                type:String,
+                required:true,
+        }
+    ],
         tickets: [
             {
                 type: mongoose.SchemaTypes.ObjectId,
@@ -27,6 +34,7 @@ const ProjectSchema = new Schema(
     },
     { timestamps: true, toJSON: { getters: true } } // timestamps, in this object, will give us when this particular one was created and updated
 )
+
 
 const Project = mongoose.model("Project", ProjectSchema)
 export default Project;

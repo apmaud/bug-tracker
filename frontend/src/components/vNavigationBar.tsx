@@ -7,12 +7,11 @@ import AdminPanelSettingsSharpIcon from '@mui/icons-material/AdminPanelSettingsS
 import GridViewSharpIcon from '@mui/icons-material/GridViewSharp';
 import LoginIcon from '@mui/icons-material/Login';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import { UserContext } from '@/UserContext';
 import { useDispatch } from "react-redux";
 import { setLogout } from "@/state";
 import { useSelector } from "react-redux";
 
-const Navbar = (props) => {
+const vNavbar = (props) => {
     // grabs the theme settings from theme.ts, grabs the pallete object from exported themeSettings
     const { palette } = useTheme();
     // state determining what page we are on, so we can highlight the text for the page
@@ -167,4 +166,4 @@ const Navbar = (props) => {
     )
 }
 
-export default Navbar
+export default vNavbar

@@ -1,27 +1,31 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 import Vnavbar from '@/components/vNavigationBar';
 import Hnavbar from "@/components/hNavigationBar";
+import Team from './Team';
+import TicketInfo from './TicketInfo';
+import TicketList from './TicketList';
+import Header from './Header';
 
 const gridTemplateLargeScreens = `
-    "a a a"
-    "a a a"
-    "a a a"
-    "b c d"
-    "b c d"
-
+    "h h h"
+    "a b b"
+    "a b b"
+    "c c c"
+    "c c c"
 `;
 
 const gridTemplateSmallScreens = `
-  "a"
-  "a"
-  "b"
-  "c"
-  "d"
+    "h"
+    "a"
+    "b"
+    "b"
+    "c"
+    "c"
 `;
 
 
 
-const Tickets = () => {
+const Project = () => {
   const { palette } = useTheme();
   const isAboveMediumScreens = useMediaQuery("(min-width: 600px)")
   return (
@@ -47,13 +51,13 @@ const Tickets = () => {
 
 
         {isAboveMediumScreens && (
-          <Vnavbar current="tickets"/>
+          <Vnavbar />
         )}
         {!isAboveMediumScreens && (
           <Box
           minWidth="765px"
           >
-            <Hnavbar current="tickets" />
+            <Hnavbar />
           </Box>
         )}
 
@@ -67,22 +71,25 @@ const Tickets = () => {
               ? {
                   gridAutoColumns: "1fr 1fr 1fr",
                   // gridTemplateColumns: "repeat(3, minmax(370px, 1fr))",
-                  gridAutoRows: "80px",
+                  gridAutoRows: "1fr",
                   gridTemplateAreas: gridTemplateLargeScreens,
-                  paddingTop: "12rem",
+                  paddingTop: "6rem",
                 } 
               : {
                   gridTemplateColumns: "minmax(765px, 1fr)",
-                  gridAutoRows: "1fr",
+                  gridAutoRows: "auto",
                   gridTemplateAreas: gridTemplateSmallScreens,
                   paddingTop: "3rem",
                 }
         }
       >
-
+        <Header />
+        <Team />
+        <TicketList />
+        <TicketInfo />
       </Box>
     </Box>
   )
 }
 
-export default Tickets
+export default Project
