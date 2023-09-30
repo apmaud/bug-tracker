@@ -17,7 +17,7 @@ const vNavbar = (props) => {
     // state determining what page we are on, so we can highlight the text for the page
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user)
-    const fullName = `${user.firstName} ${user.lastName}`;
+    const fullName = `${user.fullName}`;
     const selected = props.current
     return (
         <Box

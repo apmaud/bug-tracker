@@ -4,9 +4,14 @@ const Schema = mongoose.Schema;
 
 const TicketSchema = new Schema(
     {
-        name: {
+        title: {
             type: String,
             require: true,
+            unique: true,
+        },
+        project: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Project",
         },
         description: {
             type: String,
@@ -15,14 +20,26 @@ const TicketSchema = new Schema(
         author: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: "User",
+            require: true,
         },
-        contributors: [
+        authorName: {
+            type: String,
+            require: true,
+        },
+        assigned: [
             {
                 type: mongoose.SchemaTypes.ObjectId,
                 ref: "User",
+                require: true,
             }
         ],
-        comment: [
+        assignedNames: [
+            {
+                type: String,
+                require: true,
+            },
+        ],
+        comments: [
             {
                 type: mongoose.SchemaTypes.ObjectId,
                 ref: "Comment",
@@ -43,10 +60,6 @@ const TicketSchema = new Schema(
         time: {
             type: Number,
             require: true,
-        },
-        project: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: "Project",
         },
     },
     { timestamps: true, toJSON: { getters: true } } // timestamps, in this object, will give us when this particular one was created and updated

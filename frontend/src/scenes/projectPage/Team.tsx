@@ -140,6 +140,7 @@ const Team = () => {
         <>
             <BlockBox
                 gridArea="a"
+                minWidth="265px"
             >
                 <Box
                     pt="1rem"

@@ -5,7 +5,7 @@ import { Box, Button, Chip, FormControl, MenuItem, OutlinedInput, Stack, TextFie
 import { useDispatch, useSelector } from 'react-redux';
 import { BootstrapInput } from '@/components/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { setProjects, setUsers } from '@/state';
 
 const ProjectList = () => {
@@ -13,6 +13,7 @@ const ProjectList = () => {
   const [pageType, setPageType] = useState("list");
   const isList = pageType === "list";
   const isNew = pageType === "new";
+  const navigate = useNavigate();
 
   // DATA
 
@@ -22,7 +23,6 @@ const ProjectList = () => {
   const token = useSelector((state) => state.token);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [tickets, setTickets] = useState("");
   const [contributors, setContributors] = React.useState<string[]>([]);
   useEffect(() => {
     if(pageType === "list"){
@@ -63,13 +63,7 @@ const ProjectList = () => {
       field: "contributorNames",
       headerName: "Contributors",
       flex: 0.5,
-      renderCell: (params: GridCellParams) => `${params.value} `,
-    },
-    {
-      field: "tickets",
-      headerName: "Tickets",
-      flex: 0.2,
-      renderCell: (params: GridCellParams) => `${params.value}`,
+      renderCell: (params: GridCellParams) => `${params.value.join(", ")} `,
     },
 
   ];
@@ -86,13 +80,12 @@ const ProjectList = () => {
       alert('new project created');
       setName("");
       setDescription("");
-      setTickets("");
       setContributors([]);
       setPageType("list");
+      getProjects();
     } else {
       setName("");
       setDescription("");
-      setTickets("");
       setContributors([]);
       alert('project creation failed');
     }
@@ -123,6 +116,9 @@ const ProjectList = () => {
     return fullNames
   }
 
+  function goToProject(id){
+    navigate(`/projects/${id}`)
+  }
   
   
   return (
@@ -188,6 +184,10 @@ const ProjectList = () => {
                 hideFooter={true}
                 rows={projects || []}
                 columns={projectColumns}
+                onRowSelectionModelChange={(id) => {
+                  const projectId = id.pop()
+                  goToProject(projectId)
+              }}
               />
             </Box>
           )} 

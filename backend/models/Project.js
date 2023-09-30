@@ -24,7 +24,7 @@ const ProjectSchema = new Schema(
                 type:String,
                 required:true,
         }
-    ],
+        ],
         tickets: [
             {
                 type: mongoose.SchemaTypes.ObjectId,
@@ -32,9 +32,11 @@ const ProjectSchema = new Schema(
             }
         ],
     },
-    { timestamps: true, toJSON: { getters: true } } // timestamps, in this object, will give us when this particular one was created and updated
+    { 
+        timestamps: true, 
+        toJSON: { getters: true },
+    } // timestamps, in this object, will give us when this particular one was created and updated
 )
-
 
 const Project = mongoose.model("Project", ProjectSchema)
 export default Project;

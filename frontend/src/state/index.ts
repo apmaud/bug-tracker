@@ -7,6 +7,7 @@ const initialState = {
   tickets: [],
   users: [],
   viewProject: null,
+  viewComments: [],
 };
 
 export const authSlice = createSlice({
@@ -37,6 +38,9 @@ export const authSlice = createSlice({
     setTickets: (state, action) => {
       state.tickets = action.payload.tickets;
     },
+    setViewComments: (state, action) => {
+      state.viewComments = action.payload.viewComments
+    },
     setTicket: (state, action) => {
         const updatedTickets = state.tickets.map((ticket) => {
             if (ticket._id === action.payload.ticket._id) return action.payload.ticket;
@@ -50,5 +54,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setLogin, setLogout, setProjects, setProject, setTickets, setTicket, setUsers, setViewProject } = authSlice.actions;
+export const { setLogin, setLogout, setProjects, setProject, setTickets, setTicket, setUsers, setViewProject, setViewComments } = authSlice.actions;
 export default authSlice.reducer;

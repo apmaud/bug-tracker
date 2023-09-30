@@ -3,15 +3,17 @@ import Vnavbar from '@/components/vNavigationBar';
 import Hnavbar from "@/components/hNavigationBar";
 import Team from './Team';
 import TicketInfo from './TicketInfo';
-import TicketList from './TicketList';
+import TicketList from './Tickets';
 import Header from './Header';
 
 const gridTemplateLargeScreens = `
-    "h h h"
-    "a b b"
-    "a b b"
-    "c c c"
-    "c c c"
+    "h h h h h"
+    "a a b b b"
+    "a a b b b"
+    "a a b b b"
+    "c c c d d"
+    "c c c d d"
+    "c c c d d"
 `;
 
 const gridTemplateSmallScreens = `
@@ -21,13 +23,14 @@ const gridTemplateSmallScreens = `
     "b"
     "c"
     "c"
+    "d"
 `;
 
 
 
 const Project = () => {
   const { palette } = useTheme();
-  const isAboveMediumScreens = useMediaQuery("(min-width: 600px)")
+  const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
   return (
     <Box 
       height="100%" 
@@ -38,6 +41,7 @@ const Project = () => {
                 display: "flex",
                 justifyContent: "flex-start",
                 gridTemplateAreas: gridTemplateLargeScreens,
+                gap: "3rem"
               } 
             : {
                 display: "flex",
@@ -86,7 +90,6 @@ const Project = () => {
         <Header />
         <Team />
         <TicketList />
-        <TicketInfo />
       </Box>
     </Box>
   )

@@ -6,14 +6,18 @@ import TicketType from './TicketType';
 import Vnavbar from '@/components/vNavigationBar';
 import Hnavbar from "@/components/hNavigationBar";
 import Header from './Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTickets } from '@/state';
+import { useEffect, useState } from 'react';
 
 const gridTemplateLargeScreens = `
     "h h h"
     "a a a"
     "a a a"
     "a a a"
-    "b c d"
-    "b c d"
+    "a a a"
+    "e e e"
+    "e e e"
 
 `;
 
@@ -21,15 +25,34 @@ const gridTemplateSmallScreens = `
   "h"
   "a"
   "a"
-  "b"
-  "c"
-  "d"
+  "e"
+`;
+
+const gridTemplatePieCharts = `
+  "b c d"
 `;
 
 
 
 const Landing = () => {
   const { palette } = useTheme();
+  const dispatch = useDispatch();
+  // const tickets = useSelector((state) => state.tickets);
+  const token = useSelector((state) => state.token);
+  const [tickets, setTickets] = useState([])
+  async function getTickets() {
+    const response = await fetch(`http://localhost:4000/tickets/get`, {
+        method: "GET",
+        headers: { Authorization: token },
+        });
+    const data = await response.json();
+    console.log(data)
+    setTickets(data)
+    // dispatch(setTickets({ tickets: data}))
+  }
+  useEffect(() => {
+        getTickets();
+  },[]);
   const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
   return (
     <Box 
@@ -41,6 +64,7 @@ const Landing = () => {
                 display: "flex",
                 justifyContent: "flex-start",
                 gridTemplateAreas: gridTemplateLargeScreens,
+                gap: "3rem",
               } 
             : {
                 display: "flex",
@@ -87,9 +111,22 @@ const Landing = () => {
       >
         <Header />
         <ProjectList />
-        <TicketPriority />
-        <TicketStatus />
-        <TicketType />
+        <Box
+          gridArea="e"
+          display="grid"
+          sx={{gridTemplateAreas: gridTemplatePieCharts}}
+        >
+          <TicketPriority 
+            tickets={tickets}
+          />
+          <TicketStatus 
+            tickets={tickets}
+          />
+          <TicketType 
+            tickets={tickets}
+          />
+        </Box>
+
       </Box>
     </Box>
   )

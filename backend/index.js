@@ -11,6 +11,7 @@ import Ticket from "./models/Ticket.js";
 import User from "./models/User.js";
 import projectsRoutes from "./routes/projects.js"
 import usersRoutes from "./routes/users.js"
+import ticketsRoutes from "./routes/tickets.js"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
@@ -37,7 +38,7 @@ app.use(cookieParser());
 // ROUTES
 
 app.use("/projects", projectsRoutes);
-// app.use("/tickets", ticketsRoutes);
+app.use("/tickets", ticketsRoutes);
 app.use("/users", usersRoutes);
 // app.use("/comments", commentsRoutes);
 
@@ -94,6 +95,8 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async () => {
+        // await Comment.deleteMany()
+        // await Ticket.deleteMany()
         app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
         // ADD DATA ONE TIME ONLY OR AS NEEDED
         // do NOT ever use in a real production app, for obvious reasons future arjun

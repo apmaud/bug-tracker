@@ -66,7 +66,7 @@ export const postUserLogin = async (req, res) => {
     const user = await User.findOne({username});
     const passOk = bcrypt.compareSync(password, user.password)
     if (passOk){
-        const token = jwt.sign({ id: user._id }, `${process.env.JWT_SECRET_KEY}`);
+        const token = jwt.sign({ id: user._id }, `${process.env.SECRET}`);
         delete user.password;
         res.status(200).json({ token, user });
     } else {

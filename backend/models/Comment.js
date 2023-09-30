@@ -12,7 +12,7 @@ const CommentSchema = new Schema(
             type: String,
             require: true,
         },
-        tickets: {
+        ticket: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: "Ticket",
         },
