@@ -155,7 +155,7 @@ export const patchTicket = async (req, res) => {
             return user._id
         }))
         await Ticket.findByIdAndUpdate(ticketId, 
-            { 
+            {
                 title: title,
                 description: description,
                 assigned: contributorIds,

@@ -153,7 +153,7 @@ const Form = () => {
             </FormControl>
             <FormControl variant="standard">
               <Typography color="secondary">Password</Typography>
-              <BootstrapInput onChange={ev => setPassword(ev.target.value)} value={password}/>
+              <BootstrapInput type="password" onChange={ev => setPassword(ev.target.value)} value={password}/>
             </FormControl>
           </Stack>
           <Button type="submit" variant="outlined" color="secondary">{isLogin ? "LOGIN" : "REGISTER"}</Button>
