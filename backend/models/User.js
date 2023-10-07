@@ -29,6 +29,10 @@ const UserSchema = new Schema(
               return this.firstName + " " + this.lastName
             }
         },
+        role: {
+            type: String,
+            default: "User",
+        },
     },
     { 
         timestamps: true, 

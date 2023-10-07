@@ -1,22 +1,24 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material'
 import Vnavbar from '@/components/vNavigationBar';
 import Hnavbar from "@/components/hNavigationBar";
+import TicketList from './TicketList';
+import Header from './Header';
 
 const gridTemplateLargeScreens = `
-    "a a a"
-    "a a a"
-    "a a a"
-    "b c d"
-    "b c d"
+  "h h h"
+  "a a a"
+  "a a a"
+  "a a a"
+  "a a a"
+  "a a a"
+  "a a a"
 
 `;
 
 const gridTemplateSmallScreens = `
+  "h"
   "a"
   "a"
-  "b"
-  "c"
-  "d"
 `;
 
 
@@ -34,6 +36,7 @@ const Tickets = () => {
                 display: "flex",
                 justifyContent: "flex-start",
                 gridTemplateAreas: gridTemplateLargeScreens,
+                gap: "3rem",
               } 
             : {
                 display: "flex",
@@ -69,7 +72,7 @@ const Tickets = () => {
                   // gridTemplateColumns: "repeat(3, minmax(370px, 1fr))",
                   gridAutoRows: "80px",
                   gridTemplateAreas: gridTemplateLargeScreens,
-                  paddingTop: "12rem",
+                  paddingTop: "6rem",
                 } 
               : {
                   gridTemplateColumns: "minmax(765px, 1fr)",
@@ -79,7 +82,8 @@ const Tickets = () => {
                 }
         }
       >
-
+        <Header />
+        <TicketList />
       </Box>
     </Box>
   )

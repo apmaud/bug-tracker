@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { setViewProject, setUsers, setTickets, setTicket, setViewComments } from '@/state';
 import ProjectList from '../landingPage/ProjectList';
+import AddTicketDialog from './dialogs/AddTicketDialog';
+import DeleteTicketDialog from './dialogs/DeleteTicketDialog';
 
 const TicketList = () => {
 
     // PAGE CONTROL
     const [pageType, setPageType] = useState("list");
-    const isList = pageType === "list";
-    const isNew = pageType === "new";
     const isView = pageType === "view"
 
     // API STATES
@@ -23,14 +23,6 @@ const TicketList = () => {
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
     const project = useSelector((state) => state.viewProject)
-    const authorName = `${user.fullName}`
-    const [title, setTitle] = useState("")
-    const [description, setDescription] = useState("")
-    const [status, setStatus] = useState("")
-    const [priority, setPriority] = useState("")
-    const [type, setType] = useState("")
-    const [timeEst, setTimeEst] = useState(0)
-    const [contributors, setContributors] = useState([]);
     const [comment, setComment] = useState("")
     const [ticketData, setTicketData] = useState({});
     const [ticketId, setTicketId] = useState("");
@@ -60,6 +52,19 @@ const TicketList = () => {
        },
       },
     };
+    const renderDeleteButton = (params) => {
+        return (
+            <strong>
+                <DeleteTicketDialog
+                    params={params.row}
+                    projectId={projectId}
+                    refreshTickets={getTickets}
+                    pageType={pageType}
+                    setPageType={setPageType}
+                />
+            </strong>
+        )
+    }
     const ticketsColumns = [
       {
         field: "title",
@@ -78,6 +83,12 @@ const TicketList = () => {
         headerName: "Assigned to",
         flex: 1,
         renderCell: (params: GridCellParams) => `${params.value.join(", ")}`,
+      },
+      {
+        field: "delete",
+        headerName: "",
+        flex: 0.5,
+        renderCell: renderDeleteButton,
       },
     ];
     const ticketCommentsColumns = [
@@ -100,7 +111,7 @@ const TicketList = () => {
         //   valueFormatter: params => new Date(params?.value).toLocaleString(),
           renderCell: (params: GridCellParams) => `${new Date(params.value).toLocaleString()}`,
         },
-      ];
+    ];
 
     // API FUNCTIONS
     
@@ -120,48 +131,9 @@ const TicketList = () => {
         });
         const data = await response.json();
         dispatch(setUsers({ users: data}))
-        // getProjectTeam();
-        // getNotTeamUsers();
     }
-
-    // const getProjectTeam = useCallback(async () => {
-    //     const response = await fetch(`http://localhost:4000/projects/${projectId}/team`, {
-    //         method: "GET",
-    //         headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //     const data = await response.json();
-    //     setProjectTeam(data);
-    // }, [projectTeam])
 
     // Add a new person to the project
-    async function newTicket(ev){
-        ev.preventDefault();
-        const response = await fetch(`http://localhost:4000/tickets/${projectId}/post`, {
-          method: "POST",
-          body: JSON.stringify({title, description, contributors, status, priority, type, timeEst, token, authorName}),
-          headers: {'Content-Type': 'application/json'},
-        });
-        if (response.status === 200) {
-          alert('new ticket added');
-          setPageType("list");
-          setTitle("")
-          setDescription("")
-          setStatus("")
-          setPriority("")
-          setType("")
-          setTimeEst(0)
-          setContributors([]);
-          getTickets();
-        } else {
-          setTitle("")
-          setDescription("")
-          setStatus("")
-          setPriority("")
-          setType("")
-          setTimeEst("")
-          setContributors([]);
-        }
-    }
     
     async function newComment(ev){
         ev.preventDefault();
@@ -179,7 +151,6 @@ const TicketList = () => {
         }
     }
 
-
     async function getComments(ticketId) {
         const response = await fetch(`http://localhost:4000/tickets/${ticketId}/comments`, {
             method: "GET",
@@ -194,21 +165,6 @@ const TicketList = () => {
         setTicketData(selectedData)
         setPageType("view")
     }
-
-
-    // Used to display all the options for people not on the team to add
-    // const getNotTeamUsers = useCallback(async () => {
-    //     const team = project.contributorNames;
-    //     const total = getFullNames();
-    //     const notTeam = total.filter(name => !team.includes(name));
-    //     setNotTeam(notTeam);
-    // }, [notTeam])
-    // function getNotTeamUsers() {
-    //     const team = project.contributorNames;
-    //     const total = getFullNames();
-    //     const notTeam = total.filter(name => !team.includes(name));
-    //     setNotTeam(notTeam);
-    // }
 
     return (
         <>
@@ -231,17 +187,11 @@ const TicketList = () => {
                     <Box
                     height="2rem"
                     >
-                        {(isList || isView) && (
-                            <Button
-                            variant="outlined" 
-                            color="secondary"
-                            onClick={() => {
-                            setPageType("new");
-                            }}
-                            >
-                                Add Ticket
-                            </Button>
-                        )}
+                        <AddTicketDialog 
+                            projectId={projectId}
+                            refreshTickets={getTickets}
+                            project={project}
+                        />
                     </Box>
                 </Box>         
                     <Box
@@ -284,158 +234,10 @@ const TicketList = () => {
                                 setTicketData(ticket)
                                 getComments(ticketId)
                                 setPageType("view")
-                                // const selectedRowData = ids.map((id) => tickets.find((ticket) => ticket.id === id));
-                                // const selectedData = selectedRowData.pop()
-                                // setTicketData(selectedData)
-                                // setPageType("view")
                             }}
                         />
                     </Box>
-                
             </BlockBox>
-            {isNew && (
-              <BlockBox
-              gridArea="c"
-              minWidth="615px"
-              >
-                <Box
-                pt="1rem"
-                pl="1rem"
-                pr="1rem"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                >
-                    <Typography variant="h3" fontSize="18px">New Ticket</Typography>
-                </Box>
-                <Box
-                    height="100%"
-                    width="100%"
-                    display="flex"
-                    alignItems="flex-start"
-                    justifyContent="stretch"
-                    >
-                        <form onSubmit={newTicket}>
-                            <Stack spacing={1} direction="column" marginLeft="1rem"> 
-                                <Stack spacing={1} direction="row" sx={{marginBottom: 4}}> 
-                                    <FormControl variant="standard" required sx={{ width: "14rem" }}>
-                                    <Typography color="secondary">Title</Typography>
-                                    <TextField
-                                        id="title" 
-                                        onChange={ev => setTitle(ev.target.value)}
-                                        value={title}
-                                        style={{background: palette.grey[100], height: "3rem"}}
-                                    />
-                                    </FormControl>
-                                    <FormControl variant="standard" required sx={{ width: "14rem" }}>
-                                        <Typography color="secondary">Description</Typography>
-                                        <TextField
-                                            id="description" 
-                                            onChange={ev => setDescription(ev.target.value)}
-                                            value={description}
-                                            multiline
-                                            rows={2}
-                                            style={{background: palette.grey[100]}}
-                                        />
-                                    </FormControl>
-                                    <FormControl variant="standard" required sx={{ width: "7rem" }}>
-                                        <Typography color="secondary">Time Estimated</Typography>
-                                        <TextField
-                                            id="time" 
-                                            onChange={ev => setTimeEst(ev.target.value)}
-                                            value={timeEst}
-                                            style={{background: palette.grey[100], height: "3rem"}}
-                                            type="number"
-                                        />
-                                    </FormControl>
-                                </Stack>
-                                <Stack spacing={2} direction="row" sx={{marginBottom: 4}}>                                 
-                                </Stack>
-                                <Stack spacing={2} direction="row" sx={{marginBottom: 4}}>
-                                    <FormControl variant="standard" required sx={{ width: "15rem" }}>
-                                        <Typography color="secondary">Assigned to</Typography>
-                                        <Select
-                                            multiple
-                                            value={contributors}
-                                            onChange={ev => setContributors(ev.target.value)}
-                                            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                                            renderValue={(selected) => (
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5,}}>
-                                                {selected.map((value) => (
-                                                <Chip key={value} label={value} />
-                                                ))}
-                                            </Box>
-                                            )}
-                                            MenuProps={MenuProps}
-                                            color="secondary"
-                                            sx={{ backgroundColor: palette.grey[100], height: "3rem", }}
-                                            >
-                                            {project.contributorNames.map((name) => (
-                                            <MenuItem
-                                                key={name}
-                                                value={name}
-                                                style={{
-                                                backgroundColor: palette.grey[100]
-                                                }}
-                                            >
-                                                {name}
-                                            </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl variant="standard" required sx={{ width: "14rem" }}>
-                                        <Typography color="secondary">Status</Typography>
-                                        <Select
-                                        value={status}
-                                        onChange={ev => setStatus(ev.target.value)}
-                                        color="secondary"
-                                        sx={{ backgroundColor: palette.grey[100], height: "3rem", }}
-                                        >
-                                            <MenuItem value="New">New</MenuItem>
-                                            <MenuItem value="Assigned">Assigned</MenuItem>
-                                            <MenuItem value="In Progress">In Progress</MenuItem>
-                                            <MenuItem value="Pending">Pending</MenuItem>
-                                            <MenuItem value="Resolved">Resolved</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    <Button type="submit" variant="outlined" color="secondary" sx={{height: "2.5rem"}}>Create</Button>
-                                </Stack>
-                                <Stack spacing={2} direction="row" sx={{marginBottom: 4}}>
-                                    <FormControl variant="standard" required sx={{ width: "15rem" }}>
-                                        <Typography color="secondary">Priority</Typography>
-                                        <Select
-                                        value={priority}
-                                        onChange={ev => setPriority(ev.target.value)}
-                                        color="secondary"
-                                        sx={{ backgroundColor: palette.grey[100], height: "3rem", }}
-                                        >
-                                            <MenuItem value="High">High</MenuItem>
-                                            <MenuItem value="Medium">Medium</MenuItem>
-                                            <MenuItem value="Low">Low</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    <FormControl variant="standard" required sx={{ width: "14rem" }}>
-                                        <Typography color="secondary">Type</Typography>
-                                        <Select
-                                        value={type}
-                                        onChange={ev => setType(ev.target.value)}
-                                        color="secondary"
-                                        sx={{ backgroundColor: palette.grey[100], height: "3rem", }}
-                                        >
-                                            <MenuItem value="Service">Service</MenuItem>
-                                            <MenuItem value="Problem">Problem</MenuItem>
-                                            <MenuItem value="Incident">Incident</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                    {isNew && (
-                                    <Button sx={{height: "2.5rem"}} variant="outlined" color="secondary" onClick={() => {setPageType("list");}}>Cancel</Button>
-                                    )}
-                                </Stack>
-                            </Stack>
-                        </form>
-                    </Box>
-              </BlockBox>
-            )}
             {isView && (
                 <>
                     <BlockBox
@@ -578,7 +380,7 @@ const TicketList = () => {
                                 gap="0.5rem"
                                 >
                                     <Button 
-                                    variant="outlined" 
+                                    variant="contained"
                                     color="secondary"
                                     onClick={() => {
                                     setPageType("list");
@@ -667,7 +469,7 @@ const TicketList = () => {
                                                 />
                                             </FormControl>
                                             <Button 
-                                            variant="outlined" 
+                                            variant="contained"
                                             color="secondary"
                                             type="submit"
                                             >
@@ -681,7 +483,6 @@ const TicketList = () => {
                     </BlockBox>
                 </>
             )}
-
         </>
     )
 }

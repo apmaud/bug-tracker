@@ -7,13 +7,14 @@ import { BootstrapInput } from '@/components/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { setProjects, setUsers, setTickets } from '@/state';
+import SetUserRoleDialog from './dialogs/SetUserRoleDialog';
 
-const TicketList = () => {
+const UserList = () => {
     // PAGE CONTROL
     const navigate = useNavigate();
 
     // DATA
-
+    const users = useSelector((state) => state.users);
     const dispatch = useDispatch();
     const { palette } = useTheme();
     const [tickets, setTickets] = useState([])
@@ -22,88 +23,58 @@ const TicketList = () => {
     const token = useSelector((state) => state.token);
 
     useEffect(() => {
-        getTickets();
-        getRelevantProjects();
+        getUsers()
     }, []
     );
 
     // STYLING
-    const ticketsColumns = [
-        {
-            field: "title",
-            headerName: "Title",
-            flex: 1,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "description",
-            headerName: "Description",
-            flex: 1,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "authorName",
-            headerName: "Author",
-            flex: 0.75,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "assignedNames",
-            headerName: "Assigned to",
-            flex: 1,
-            renderCell: (params: GridCellParams) => `${params.value.join(", ")} `,
-        },
-        {
-            field: "priority",
-            headerName: "Priority",
-            flex: 0.75,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "type",
-            headerName: "Type",
-            flex: 0.75,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "status",
-            headerName: "Status",
-            flex: 0.75,
-            renderCell: (params: GridCellParams) => `${params.value}`,
-        },
-        {
-            field: "time",
-            headerName: "Time",
-            flex: 0.5,
-            renderCell: (params: GridCellParams) => `${params.value} hr`,
-        },
+    const renderEditButton = (params) => {
+        return (
+            <strong>
+                <SetUserRoleDialog
+                    userInfo={params.row}
+                    refreshUsers={getUsers}
+                />
+            </strong>
+        )
+    }
 
+    const usersColumns = [
+        {
+            field: "lastName",
+            headerName: "Last Name",
+            flex: 1,
+            renderCell: (params: GridCellParams) => `${params.value}`,
+        },
+        {
+            field: "firstName",
+            headerName: "First Name",
+            flex: 1,
+            renderCell: (params: GridCellParams) => `${params.value}`,
+        },
+        {
+            field: "role",
+            headerName: "Role",
+            flex: 1,
+            renderCell: (params: GridCellParams) => `${params.value}`,
+        },
+        {
+            field: "Edit",
+            headerName: "",
+            flex: 0.5,
+            renderCell: renderEditButton,
+      
+        },
     ];
 
     // API FUNCTIONS
 
-    async function getTickets() {
-        const response = await fetch(`http://localhost:4000/tickets/get`, {
+    async function getUsers() {
+        const response = await fetch('http://localhost:4000/users/get', {
             method: "GET",
-            headers: { Authorization: token },
-            });
-        const data = await response.json();
-        console.log(data)
-        setTickets(data)
-        // dispatch(setTickets({ tickets: data}))
-    }
-    async function getRelevantProjects() {
-        const response = await fetch(`http://localhost:4000/projects/get/relevant`, {
-            method: "GET",
-            headers: { Authorization: token },
         });
         const data = await response.json();
-        setProjects(data)
-        // dispatch(setTickets({ tickets: data}))
-    }
-
-    function goToProject(id){
-        navigate(`/projects/${id}`)
+        dispatch(setUsers({ users: data}))
     }
 
 
@@ -152,17 +123,8 @@ const TicketList = () => {
                     columnHeaderHeight={25}
                     getRowHeight={() => 'auto'}
                     hideFooter={true}
-                    rows={tickets || []}
-                    columns={ticketsColumns}
-                    onRowSelectionModelChange={(id) => {
-                        const ticketId = id.pop()
-                        const relevantProject = projects.find((project) =>
-                            (project.tickets.includes(ticketId))
-                        )
-                        // console.log(relevantProject._id)
-                        // 65173c6891e1c6d378b1e3f3
-                        goToProject(relevantProject._id)
-                }}
+                    rows={users || []}
+                    columns={usersColumns}
                 />
                 </Box>
             </BlockBox>
@@ -170,4 +132,4 @@ const TicketList = () => {
     )
 }
 
-export default TicketList
+export default UserList

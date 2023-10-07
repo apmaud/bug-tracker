@@ -2,6 +2,7 @@ import Project from "../models/Project.js";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+const salt = bcrypt.genSaltSync(10);
 
 export const getUser = async (req, res) => {
     try{
@@ -76,4 +77,14 @@ export const postUserLogin = async (req, res) => {
 
 export const postUserLogout = async (req, res) => {
     res.cookie('token', '').json('ok');
+}
+
+export const patchUserRole = async (req, res) => {
+    const {role, userId} = req.body
+    try {
+        await User.findByIdAndUpdate(userId, { role: role} )
+        res.status(200).json()
+    } catch(error) {
+        res.status(404).json({ message: error.message });
+    }
 }

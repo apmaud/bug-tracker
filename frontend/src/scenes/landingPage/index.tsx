@@ -36,10 +36,11 @@ const gridTemplatePieCharts = `
 
 const Landing = () => {
   const { palette } = useTheme();
+  const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
   const dispatch = useDispatch();
-  // const tickets = useSelector((state) => state.tickets);
   const token = useSelector((state) => state.token);
   const [tickets, setTickets] = useState([])
+
   async function getTickets() {
     const response = await fetch(`http://localhost:4000/tickets/get`, {
         method: "GET",
@@ -48,12 +49,10 @@ const Landing = () => {
     const data = await response.json();
     console.log(data)
     setTickets(data)
-    // dispatch(setTickets({ tickets: data}))
   }
   useEffect(() => {
         getTickets();
   },[]);
-  const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
   return (
     <Box 
       height="100%" 
@@ -109,6 +108,7 @@ const Landing = () => {
                 }
         }
       >
+        
         <Header />
         <ProjectList />
         <Box

@@ -1,10 +1,12 @@
 import BlockBox from '@/components/BlockBox'
-import { Box, Button, Chip, FormControl, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
+import { Box, Button, Chip, Dialog, DialogTitle, FormControl, MenuItem, OutlinedInput, Select, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { DataGrid, GridCellParams } from '@mui/x-data-grid';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { setViewProject, setUsers } from '@/state';
+import DeleteTeamDialog from './dialogs/DeleteTeamDialog';
+import AddTeamDialog from './dialogs/AddTeamDialog';
 
 const Team = () => {
 
@@ -17,29 +19,39 @@ const Team = () => {
     const dispatch = useDispatch();
     const project = useSelector((state) => state.viewProject);
     const users = useSelector((state) => state.users);
-    // const [project, setProject] = useState({});
-    // const [users, setUsers] = useState([]);
-    const [notTeam, setNotTeam] = useState(null);
+    const [notTeam, setNotTeam] = useState([]);
     const [projectTeam, setProjectTeam] = useState(null);
     const token = useSelector((state) => state.token);
-    const [contributors, setContributors] = useState([]);
     const {projectId} = useParams();
+
     useEffect(() => {
-        if (pageType === "list"){
             getProject();
             getUsers();
-        }
-        else{
             getUsers();
             getNotTeamUsers()
-        }
         },[]
     );
+
+    // DIALOGS
+    const renderDeleteButton = (params) => {
+        return (
+            <strong>
+                <DeleteTeamDialog
+                    params={params.row}
+                    projectId={projectId}
+                    refreshTeam={getProjectTeam}
+                    refreshNotTeam={getNotTeamUsers}
+                />
+            </strong>
+        )
+    }
+
 
     // STYLING
     const { palette } = useTheme();
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
+
     const MenuProps = {
       PaperProps: {
         style: {
@@ -48,12 +60,19 @@ const Team = () => {
        },
       },
     };
+
     const teamColumns = [
       {
         field: "name",
         headerName: "Name",
         flex: 1,
         renderCell: (params: GridCellParams) => `${params.value}`,
+      },
+      {
+        field: "delete",
+        headerName: "",
+        flex: 0.3,
+        renderCell: renderDeleteButton,
       },
     ];
 
@@ -63,7 +82,7 @@ const Team = () => {
         const response = await fetch(`http://localhost:4000/projects/${projectId}`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-            });
+        });
         const data = await response.json();
         dispatch(setViewProject({ viewProject: data}))
         const ids = data.contributors
@@ -91,28 +110,6 @@ const Team = () => {
         setProjectTeam(data);
     }, [projectTeam])
 
-    // Add a new person to the project
-    async function newPerson(ev){
-        ev.preventDefault();
-        if (contributors === null) return
-        const newContributors = getFullNames().filter(name => contributors.includes(name));
-        console.log(newContributors)
-        const response = await fetch(`http://localhost:4000/projects/${projectId}/team/update`, {
-          method: "PATCH",
-          body: JSON.stringify({newContributors}),
-          headers: {'Content-Type': 'application/json'},
-        });
-        const updatedProject = await response.json();
-        dispatch(setViewProject({ viewProject: updatedProject }))
-        if (response.status === 200) {
-          alert('new person added');
-          setPageType("list");
-          setContributors([]);
-        } else {
-          setContributors([]);
-        }
-    }
-    
 
     function getFullNames(){
         const fullNames = users.map(
@@ -121,26 +118,18 @@ const Team = () => {
         })
         return fullNames
     }
-
-    // Used to display all the options for people not on the team to add
     const getNotTeamUsers = useCallback(async () => {
         const team = project.contributorNames;
         const total = getFullNames();
         const notTeam = total.filter(name => !team.includes(name));
         setNotTeam(notTeam);
-    }, [notTeam])
-    // function getNotTeamUsers() {
-    //     const team = project.contributorNames;
-    //     const total = getFullNames();
-    //     const notTeam = total.filter(name => !team.includes(name));
-    //     setNotTeam(notTeam);
-    // }
+    }, [notTeam, project])
 
     return (
         <>
             <BlockBox
                 gridArea="a"
-                minWidth="265px"
+                minWidth="394px"
             >
                 <Box
                     pt="1rem"
@@ -150,27 +139,15 @@ const Team = () => {
                     alignItems="center"
                     justifyContent="space-between"
                 >
-                    {isList && (
                     <Typography variant="h3" fontSize="18px">Team</Typography>
-                    )}
-                    {isNew && (
-                    <Typography variant="h3" fontSize="18px">Users</Typography>
-                    )}
-                    <Button
-                        variant="outlined" 
-                        color="secondary"
-                        onClick={() => {
-                        setPageType(isList ? "new" : "list");
-                        }}
-                    >
-                        {isList
-                            ? "Add"
-                            : "Team"}
-                    </Button>
+                    <AddTeamDialog 
+                    projectId={projectId}
+                    refreshTeam={getProjectTeam}
+                    refreshNotTeam={getNotTeamUsers}
+                    notTeam={notTeam}
+                    refreshFullNames={getFullNames}
+                    />
                 </Box>
-
-                
-                {isList && (
                     <Box
                     mt="0.5rem"
                     p="0 0.5rem"
@@ -205,56 +182,6 @@ const Team = () => {
                             columns={teamColumns}
                         />
                     </Box>
-                )}
-
-                {isNew && (
-                    <Box
-                    height="100%"
-                    width="100%"
-                    display="flex"
-                    alignItems="flex-start"
-                    justifyContent="stretch"
-                    >
-                        <form onSubmit={newPerson}>
-                            <Stack spacing={2} direction="row" marginLeft="1rem"> 
-                                <FormControl variant="standard" sx={{ minWidth: "250px"}}>
-                                    <Typography color="secondary">People</Typography>
-                                    <Select
-                                        multiple
-                                        value={contributors}
-                                        onChange={ev => setContributors(ev.target.value)}
-                                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                                        renderValue={(selected) => (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5,}}>
-                                            {selected.map((value) => (
-                                            <Chip key={value} label={value} />
-                                            ))}
-                                        </Box>
-                                        )}
-                                        MenuProps={MenuProps}
-                                        color="secondary"
-                                        sx={{ backgroundColor: palette.grey[100] }}
-                                        >
-                                        {notTeam.map((name) => (
-                                        <MenuItem
-                                            key={name}
-                                            value={name}
-                                            style={{
-                                            backgroundColor: palette.grey[100]
-                                            }}
-                                        >
-                                            {name}
-                                        </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Stack>
-                            <Box display="flex" mt="0.5rem" justifyContent="end" mr="1rem">
-                                <Button type="submit" variant="outlined" color="secondary">Create</Button>
-                            </Box>
-                        </form>
-                    </Box>
-                )}
             </BlockBox>
         </>
     )

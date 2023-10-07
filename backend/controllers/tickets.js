@@ -26,7 +26,6 @@ export const getTickets = async (req, res) => {
                 tickets.push(ticket);
             }
         }));
-        console.log(tickets)
         res.status(200).json(tickets)
     } catch(error) {
         res.status(404).json({ message: error.message });
@@ -74,8 +73,33 @@ export const postTicket = async (req, res) => {
                 {$push: {"tickets": result._id}}
             )
         });
-        console.log(ticketDoc)
         res.status(200).json(contributorIds)
+    } catch(error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
+export const removeTicket = async (req, res) => {
+    const { id } = req.params
+    const { parameters } = req.body
+    try{
+        const removeTicketId = parameters._id
+        const commentIds = parameters.comments
+
+        const project = await Project.findOne({_id: id})
+        const currentTickets = project.tickets
+        const newTickets = currentTickets.filter((ticket) => ticket.toString() !== removeTicketId.toString())
+        const updatedProject = await Project.findByIdAndUpdate(
+            id,
+            { tickets: newTickets},
+        );
+
+        commentIds.forEach(async (id) => {
+            await Comment.findOneAndDelete({_id: id})
+        })
+
+        await Ticket.findOneAndDelete({_id: removeTicketId})
+        res.status(200).json(updatedProject)
     } catch(error) {
         res.status(404).json({ message: error.message });
     }
@@ -90,7 +114,6 @@ export const getComments = async (req, res) => {
             const comment = await Comment.findOne({_id: id})
             return comment
         }))
-        console.log(comments)
         res.status(200).json(comments)
     } catch(error) {
         res.status(404).json({ message: error.message });
@@ -117,10 +140,6 @@ export const postComment = async (req, res) => {
                 {$push: {"comments": result._id}}
             )
         });
-        console.log(commentDoc)
-        console.log(verified)
-        console.log(author)
-        console.log(comment)
         res.status(200).json()
     } catch(error) {
         res.status(404).json({ message: error.message });

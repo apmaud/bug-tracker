@@ -1,5 +1,5 @@
 import express from "express";
-import { getUser, getUserProfile, getUserIdOne, getUsersNames, postUser, postUserLogin, postUserLogout } from "../controllers/users.js";
+import { getUser, getUserProfile, getUserIdOne, getUsersNames, postUser, postUserLogin, postUserLogout, patchUserRole } from "../controllers/users.js";
 const router = express.Router();
 
 // READ
@@ -11,6 +11,7 @@ router.get("/get/id/one", getUserIdOne)
 
 // UPDATE
 
+router.patch("/role/set", patchUserRole)
 
 // CREATE
 

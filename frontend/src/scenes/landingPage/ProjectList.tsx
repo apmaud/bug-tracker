@@ -7,30 +7,24 @@ import { BootstrapInput } from '@/components/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { setProjects, setUsers } from '@/state';
+import AddProjectDialog from './dialogs/AddProjectDialog';
+import DeleteProjectDialog from './dialogs/DeleteProjectDialog';
 
 const ProjectList = () => {
   // PAGE CONTROL
-  const [pageType, setPageType] = useState("list");
-  const isList = pageType === "list";
-  const isNew = pageType === "new";
   const navigate = useNavigate();
 
   // DATA
 
   const dispatch = useDispatch();
-  const projects = useSelector((state) => state.projects);
+  // const projects = useSelector((state) => state.projects);
   const users = useSelector((state) => state.users);
   const token = useSelector((state) => state.token);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [contributors, setContributors] = React.useState<string[]>([]);
+  const [projects, setProjects] = useState([])
+
   useEffect(() => {
-    if(pageType === "list"){
       getProjects();
-    }
-    else{
       getUsers();
-    }
   }, []
   );
 
@@ -46,59 +40,66 @@ const ProjectList = () => {
      },
     },
   };
+  const renderDeleteButton = (params) => {
+    return (
+        <strong>
+            <DeleteProjectDialog
+                params={params.row}
+                refreshTickets={getProjects}
+            />
+        </strong>
+    )
+}
+
   const projectColumns = [
     {
       field: "name",
       headerName: "Name",
-      flex: 0.4,
+      flex: 1,
       renderCell: (params: GridCellParams) => <a href={`/projects/${params.id}`}>{params.value}</a>,
     },
     {
       field: "description",
       headerName: "Description",
-      flex: 0.4,
+      flex: 1,
       renderCell: (params: GridCellParams) => `${params.value}`,
     },
     {
       field: "contributorNames",
       headerName: "Contributors",
-      flex: 0.5,
+      flex: 1,
       renderCell: (params: GridCellParams) => `${params.value.join(", ")} `,
+    },
+    {
+      field: "delete",
+      headerName: "",
+      flex: 0.4,
+      renderCell: renderDeleteButton,
+
     },
 
   ];
 
   // API FUNCTIONS
-  async function newProject(ev){
-    ev.preventDefault();
-    const response = await fetch('http://localhost:4000/projects/post', {
-      method: 'POST',
-      body: JSON.stringify({name, description, contributors}),
-      headers: {'Content-Type': 'application/json'},
-    });
-    if (response.status === 200) {
-      alert('new project created');
-      setName("");
-      setDescription("");
-      setContributors([]);
-      setPageType("list");
-      getProjects();
-    } else {
-      setName("");
-      setDescription("");
-      setContributors([]);
-      alert('project creation failed');
-    }
-  }
 
-  async function getProjects() {
+  // async function getProjects() {
+  //   const response = await fetch('http://localhost:4000/projects/get', {
+  //     method: "GET",
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   });
+  //   const data = await response.json();
+  //   setProjects(data)
+  //   // dispatch(setProjects({ projects: data}))
+  // }
+  
+  const getProjects = useCallback(async () => {
     const response = await fetch('http://localhost:4000/projects/get', {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    dispatch(setProjects({ projects: data}))
-  }
+    setProjects(data)
+}, [projects])
 
   async function getUsers() {
     const response = await fetch('http://localhost:4000/users/get', {
@@ -125,6 +126,7 @@ const ProjectList = () => {
     <>
         <BlockBox
             gridArea="a"
+            minWidth="770px"
         >
           <Box
             pt="1rem"
@@ -134,25 +136,12 @@ const ProjectList = () => {
             alignItems="center"
             justifyContent="space-between"
           >
-            {isList && (
-              <Typography variant="h3" fontSize="18px">Project List</Typography>
-            )}
-            {isNew && (
-              <Typography variant="h3" fontSize="18px">New Project</Typography>
-            )}
-            <Button
-            variant="outlined" 
-            color="secondary"
-            onClick={() => {
-              setPageType(isList ? "new" : "list");
-            }}
-            >
-            {isList
-                ? "New Project"
-                : "Project List"}
-            </Button>
+            <Typography variant="h3" fontSize="18px">Project List</Typography>
+            <AddProjectDialog 
+              refreshProjects={getProjects}
+              getFullNames={getFullNames}
+            />
           </Box>
-          {isList && (
             <Box
             mt="0.5rem"
             p="0 0.5rem"
@@ -187,77 +176,15 @@ const ProjectList = () => {
                 onRowSelectionModelChange={(id) => {
                   const projectId = id.pop()
                   goToProject(projectId)
-              }}
+                }}
+                onCellClick={(params, events) => {
+                  if (params.field === "delete") {
+                    events.stopPropagation()
+                    console.log(params)
+                  }}
+                }
               />
             </Box>
-          )} 
-          {isNew && (
-            <Box
-            height="100%"
-            width="100%"
-            >
-              <form onSubmit={newProject}>
-                <Stack spacing={2} direction="row" marginLeft="1rem"> 
-                  <Stack spacing={2} direction="column" sx={{marginBottom: 4}}> 
-                    <FormControl variant="standard">
-                      <Typography color="secondary">Name</Typography>
-                      <TextField
-                        id="name" 
-                        onChange={ev => setName(ev.target.value)}
-                        value={name}
-                        style={{background: palette.grey[100]}}
-                      />
-                    </FormControl>
-                    <FormControl variant="standard" sx={{ width: 300 }}>
-                      <Typography color="secondary">Description</Typography>
-                      <TextField
-                        id="name" 
-                        onChange={ev => setDescription(ev.target.value)}
-                        value={description}
-                        multiline
-                        rows={3}
-                        style={{background: palette.grey[100]}}
-                      />
-                    </FormControl>
-                  </Stack>
-                    <FormControl variant="standard" sx={{ width: 300 }}>
-                      <Typography color="secondary">Contributors</Typography>
-                      <Select
-                        multiple
-                        value={contributors}
-                        onChange={ev => setContributors(ev.target.value)}
-                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                        renderValue={(selected) => (
-                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5,}}>
-                            {selected.map((value) => (
-                              <Chip key={value} label={value} />
-                            ))}
-                          </Box>
-                        )}
-                        MenuProps={MenuProps}
-                        color="secondary"
-                        sx={{ backgroundColor: palette.grey[100] }}
-                        >
-                        {getFullNames().map((name) => (
-                          <MenuItem
-                            key={name}
-                            value={name}
-                            style={{
-                              backgroundColor: palette.grey[100]
-                            }}
-                          >
-                            {name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                </Stack>
-                <Box display="flex" mt="0.5rem" justifyContent="end" mr="1rem">
-                  <Button type="submit" variant="outlined" color="secondary">Create</Button>
-                </Box>
-              </form>
-            </Box>
-          )}
         </BlockBox>
     </>
   )
