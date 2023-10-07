@@ -145,3 +145,28 @@ export const postComment = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+
+export const patchTicket = async (req, res) => {
+    const {ticketId, title, description, contributors, status, priority, type, timeEst} = req.body;
+    try{
+        // const project = await Project.findOne({_id: id})
+        const contributorIds = await Promise.all(contributors.map(async (name) => {
+            const user = await User.findOne({fullName: name})
+            return user._id
+        }))
+        await Ticket.findByIdAndUpdate(ticketId, 
+            { 
+                title: title,
+                description: description,
+                assigned: contributorIds,
+                assignedNames: contributors,
+                status: status,
+                priority: priority,
+                type: type,
+                time: timeEst,
+            })
+        res.status(200).json()
+    } catch(error) {
+        res.status(404).json({ message: error.message });
+    }
+}

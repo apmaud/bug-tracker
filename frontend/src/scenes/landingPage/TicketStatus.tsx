@@ -19,7 +19,6 @@ const TicketStatus = ({tickets}) => {
     { name: "Resolved", value: resolved},
   ]
   const pieColors = [palette.primary[800], palette.primary[700], palette.primary[600], palette.primary[500], palette.primary[400]];
-  console.log(pieData)
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;

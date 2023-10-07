@@ -32,21 +32,24 @@ const ProjectList = () => {
   const { palette } = useTheme();
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-     },
-    },
-  };
+  const isAdmin = useSelector((state) => {
+    if (state.role === "Administrator") {return true}
+    else {return false}
+  });
+  const isManager = useSelector((state) => {
+    if (state.role === "Manager") {return true}
+    else {return false}
+  });
+
   const renderDeleteButton = (params) => {
     return (
         <strong>
+          {(isAdmin || isManager) && (
             <DeleteProjectDialog
                 params={params.row}
                 refreshTickets={getProjects}
             />
+          )}
         </strong>
     )
 }
@@ -137,10 +140,12 @@ const ProjectList = () => {
             justifyContent="space-between"
           >
             <Typography variant="h3" fontSize="18px">Project List</Typography>
+            {(isAdmin || isManager) && (
             <AddProjectDialog 
               refreshProjects={getProjects}
               getFullNames={getFullNames}
             />
+            )}
           </Box>
             <Box
             mt="0.5rem"

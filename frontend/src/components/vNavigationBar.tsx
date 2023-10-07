@@ -11,7 +11,7 @@ import { useDispatch } from "react-redux";
 import { setLogout } from "@/state";
 import { useSelector } from "react-redux";
 
-const vNavbar = (props) => {
+const Vnavbar = (props) => {
     // grabs the theme settings from theme.ts, grabs the pallete object from exported themeSettings
     const { palette } = useTheme();
     // state determining what page we are on, so we can highlight the text for the page
@@ -19,6 +19,16 @@ const vNavbar = (props) => {
     const user = useSelector((state) => state.user)
     const fullName = `${user.fullName}`;
     const selected = props.current
+    const isAdmin = useSelector((state) => {
+        if (state.role === "Administrator") {
+          return true
+        }
+        else {
+          return false
+        }
+      }
+    );
+
     return (
         <Box
             p="3rem 1.5rem 1rem 1.5rem"
@@ -100,7 +110,7 @@ const vNavbar = (props) => {
                     </Box>
 
                     {/* ADMINISTRATION TAB */}
-
+                    {isAdmin && (
                     <Box 
                         display="flex"
                         alignItems="center"
@@ -122,7 +132,7 @@ const vNavbar = (props) => {
                             Administration
                         </Link>
                     </Box>
-
+                    )}
                     {/* LOGIN TAB AND LOGIN TABS */}
                     
                             <Box
@@ -166,4 +176,4 @@ const vNavbar = (props) => {
     )
 }
 
-export default vNavbar
+export default Vnavbar

@@ -23,6 +23,14 @@ const Team = () => {
     const [projectTeam, setProjectTeam] = useState(null);
     const token = useSelector((state) => state.token);
     const {projectId} = useParams();
+    const isAdmin = useSelector((state) => {
+        if (state.role === "Administrator") {return true}
+        else {return false}
+      });
+    const isManager = useSelector((state) => {
+        if (state.role === "Manager") {return true}
+        else {return false}
+    });
 
     useEffect(() => {
             getProject();
@@ -36,12 +44,14 @@ const Team = () => {
     const renderDeleteButton = (params) => {
         return (
             <strong>
+                {(isAdmin || isManager) && (
                 <DeleteTeamDialog
                     params={params.row}
                     projectId={projectId}
                     refreshTeam={getProjectTeam}
                     refreshNotTeam={getNotTeamUsers}
                 />
+                )}
             </strong>
         )
     }
@@ -140,6 +150,7 @@ const Team = () => {
                     justifyContent="space-between"
                 >
                     <Typography variant="h3" fontSize="18px">Team</Typography>
+                    {(isAdmin || isManager) && (
                     <AddTeamDialog 
                     projectId={projectId}
                     refreshTeam={getProjectTeam}
@@ -147,6 +158,7 @@ const Team = () => {
                     notTeam={notTeam}
                     refreshFullNames={getFullNames}
                     />
+                    )}
                 </Box>
                     <Box
                     mt="0.5rem"

@@ -52,7 +52,6 @@ export default function AddProjectDialog(params) {
           headers: {'Content-Type': 'application/json'},
         });
         if (response.status === 200) {
-          alert('new project created');
           setName("");
           setDescription("");
           setContributors([]);

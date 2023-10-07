@@ -96,6 +96,7 @@ const Form = () => {
         setLogin({
           user: loggedIn.user,
           token: loggedIn.token,
+          role: loggedIn.role
         }),
       );
     };

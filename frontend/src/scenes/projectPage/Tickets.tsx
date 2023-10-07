@@ -8,6 +8,7 @@ import { setViewProject, setUsers, setTickets, setTicket, setViewComments } from
 import ProjectList from '../landingPage/ProjectList';
 import AddTicketDialog from './dialogs/AddTicketDialog';
 import DeleteTicketDialog from './dialogs/DeleteTicketDialog';
+import EditTicketDialog from './dialogs/EditTicketDialog';
 
 const TicketList = () => {
 
@@ -44,17 +45,18 @@ const TicketList = () => {
     const { palette } = useTheme();
     const ITEM_HEIGHT = 48;
     const ITEM_PADDING_TOP = 8;
-    const MenuProps = {
-      PaperProps: {
-        style: {
-          maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-          width: 250,
-       },
-      },
-    };
+    const isAdmin = useSelector((state) => {
+        if (state.role === "Administrator") {return true}
+        else {return false}
+      });
+    const isManager = useSelector((state) => {
+        if (state.role === "Manager") {return true}
+        else {return false}
+    });
     const renderDeleteButton = (params) => {
         return (
             <strong>
+                {(isAdmin || isManager) && (
                 <DeleteTicketDialog
                     params={params.row}
                     projectId={projectId}
@@ -62,6 +64,22 @@ const TicketList = () => {
                     pageType={pageType}
                     setPageType={setPageType}
                 />
+                )}
+            </strong>
+        )
+    }
+    const renderEditButton = (params) => {
+        return (
+            <strong>
+                {(isAdmin || isManager) && (
+                <EditTicketDialog
+                    ticketInfo={params.row}
+                    projectId={projectId}
+                    refreshTickets={getTickets}
+                    pageType={pageType}
+                    setPageType={setPageType}
+                />
+                )}
             </strong>
         )
     }
@@ -83,6 +101,12 @@ const TicketList = () => {
         headerName: "Assigned to",
         flex: 1,
         renderCell: (params: GridCellParams) => `${params.value.join(", ")}`,
+      },
+      {
+        field: "edit",
+        headerName: "",
+        flex: 0.5,
+        renderCell: renderEditButton,
       },
       {
         field: "delete",
@@ -121,7 +145,6 @@ const TicketList = () => {
             headers: { Authorization: token },
             });
         const data = await response.json();
-        console.log(data)
         dispatch(setTickets({ tickets: data}))
     }
 
@@ -157,14 +180,9 @@ const TicketList = () => {
             headers: { Authorization: token },
         });
         const responseData = await response.json();
-        console.log(responseData)
         dispatch(setViewComments({ viewComments: responseData}))
     }
 
-    function viewTicketData(selectedData) {
-        setTicketData(selectedData)
-        setPageType("view")
-    }
 
     return (
         <>
@@ -187,11 +205,13 @@ const TicketList = () => {
                     <Box
                     height="2rem"
                     >
+                        {(isAdmin || isManager) && (
                         <AddTicketDialog 
                             projectId={projectId}
                             refreshTickets={getTickets}
                             project={project}
                         />
+                        )}
                     </Box>
                 </Box>         
                     <Box
@@ -229,7 +249,6 @@ const TicketList = () => {
                             onRowSelectionModelChange={async (id) => {
                                 const ticketId = id.pop()
                                 const ticket = tickets.find((ticket) => ticket.id === ticketId)
-                                console.log(ticket)
                                 setTicketId(ticketId);
                                 setTicketData(ticket)
                                 getComments(ticketId)

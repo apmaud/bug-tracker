@@ -10,12 +10,21 @@ import Tickets from "@/scenes/ticketsPage";
 import Admin from "@/scenes/adminPage";
 import LoginRegister from "@/scenes/loginRegisterPage";
 import Project from "@/scenes/projectPage";
-import Navbar from "@/components/vNavigationBar";
 import { useSelector } from "react-redux";
 
 function App() {
   const theme = useMemo(() => createTheme(themeSettings), []);
   const isAuth = Boolean(useSelector((state) => state.token));
+  const isAdmin = useSelector((state) => {
+    if (state.role === "Administrator") {
+      return true
+    }
+    else {
+      return false
+    }
+  }
+  );
+
 
   return (
     <div className="app">
@@ -32,7 +41,7 @@ function App() {
                   <Route path="/" element={<LoginRegister />} />
                   <Route path ="/dashboard" element={isAuth ? <Landing /> : <Navigate to="/" />} />
                   <Route path="/tickets" element={isAuth ? <Tickets /> : <Navigate to="/" />} />
-                  <Route path="/admin" element={isAuth ? <Admin /> : <Navigate to="/" />} />
+                  <Route path="/admin" element={isAdmin ? <Admin /> : <Navigate to="/dashboard" />} />
                   <Route path="/projects/:projectId" element={isAuth ? <Project /> : <Navigate to="/" />} />
                 </Routes>
               </Box>

@@ -68,8 +68,9 @@ export const postUserLogin = async (req, res) => {
     const passOk = bcrypt.compareSync(password, user.password)
     if (passOk){
         const token = jwt.sign({ id: user._id }, `${process.env.SECRET}`);
+        const role = user.role
         delete user.password;
-        res.status(200).json({ token, user });
+        res.status(200).json({ token, user, role });
     } else {
         res.status(400).json('wrong credentials');
     }

@@ -1,5 +1,5 @@
 import express from "express";
-import { getTickets, postTicket, getComments, postComment, getAllTickets, removeTicket } from "../controllers/tickets.js";
+import { getTickets, postTicket, getComments, postComment, getAllTickets, removeTicket, patchTicket } from "../controllers/tickets.js";
 const router = express.Router();
 
 // READ
@@ -10,6 +10,7 @@ router.get("/get", getAllTickets)
 // UPDATE
 
 router.patch("/:id/remove", removeTicket)
+router.patch("/patch", patchTicket)
 
 // CREATE
 

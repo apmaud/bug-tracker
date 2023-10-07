@@ -1,6 +1,6 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material'
-import Vnavbar from '@/components/vNavigationBar';
-import Hnavbar from "@/components/hNavigationBar";
+import Vnavbar from '@/components/VnavigationBar';
+import Hnavbar from "@/components/HnavigationBar";
 import TicketList from './UserList';
 import Header from './Header';
 import UserList from './UserList';
