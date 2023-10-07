@@ -18,6 +18,7 @@ const gridTemplateLargeScreens = `
 
 const gridTemplateSmallScreens = `
     "h"
+    "h"
     "a"
     "b"
     "b"
@@ -30,7 +31,7 @@ const gridTemplateSmallScreens = `
 
 const Project = () => {
   const { palette } = useTheme();
-  const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
+  const isAboveMediumScreens = useMediaQuery("(min-width: 1008px)")
   return (
     <Box 
       height="100%" 

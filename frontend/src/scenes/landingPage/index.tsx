@@ -22,10 +22,13 @@ const gridTemplateLargeScreens = `
 `;
 
 const gridTemplateSmallScreens = `
-  "h"
-  "a"
-  "a"
-  "e"
+"h"
+"a"
+"a"
+"a"
+"e"
+"e"
+"."
 `;
 
 const gridTemplatePieCharts = `
@@ -36,7 +39,7 @@ const gridTemplatePieCharts = `
 
 const Landing = () => {
   const { palette } = useTheme();
-  const isAboveMediumScreens = useMediaQuery("(min-width: 800px)")
+  const isAboveMediumScreens = useMediaQuery("(min-width: 1008px)")
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const [tickets, setTickets] = useState([])

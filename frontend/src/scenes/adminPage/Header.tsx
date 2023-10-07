@@ -12,7 +12,7 @@ const Header = () => {
             paddingLeft="5rem"
         >
             
-            <Typography variant="h3" fontSize="28px">Administration</Typography>
+            <Typography variant="h3" fontSize="28px">ADMINISTRATION</Typography>
         </Box>
     </>
   )

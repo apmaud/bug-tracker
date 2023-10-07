@@ -20,13 +20,16 @@ const gridTemplateSmallScreens = `
   "h"
   "a"
   "a"
+  "a"
+  "a"
+  "."
 `;
 
 
 
 const Admin = () => {
   const { palette } = useTheme();
-  const isAboveMediumScreens = useMediaQuery("(min-width: 600px)")
+  const isAboveMediumScreens = useMediaQuery("(min-width: 1008px)")
   return (
     <Box 
       height="100%" 

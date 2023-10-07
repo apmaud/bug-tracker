@@ -12,20 +12,22 @@ const gridTemplateLargeScreens = `
   "a a a"
   "a a a"
   "a a a"
-
 `;
 
 const gridTemplateSmallScreens = `
   "h"
   "a"
   "a"
+  "a"
+  "a"
+  "."
 `;
 
 
 
 const Tickets = () => {
   const { palette } = useTheme();
-  const isAboveMediumScreens = useMediaQuery("(min-width: 600px)")
+  const isAboveMediumScreens = useMediaQuery("(min-width: 1008px)")
   return (
     <Box 
       height="100%" 
